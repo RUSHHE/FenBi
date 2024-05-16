@@ -1,5 +1,6 @@
 package com.example.fenbi
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -40,5 +41,7 @@ class MainActivity : ComponentActivity() {
             }
 
         })
+
+        startActivity(Intent(this, PracticeActivity::class.java))
     }
 }

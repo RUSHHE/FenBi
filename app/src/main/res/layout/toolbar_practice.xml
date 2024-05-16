@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:minHeight="?attr/actionBarSize"
+    android:theme="?attr/actionBarTheme">
+
+    <Button
+        android:id="@+id/close_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/close"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/counter_btn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <Button
+        android:id="@+id/counter_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/counter"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/close_btn"
+        app:layout_constraintEnd_toStartOf="@id/counter_tv"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <TextView
+        android:id="@+id/counter_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="00:00"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/counter_btn"
+        app:layout_constraintEnd_toStartOf="@id/mark_btn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <Button
+        android:id="@+id/mark_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/mark"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/counter_tv"
+        app:layout_constraintEnd_toStartOf="@id/edit_btn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <Button
+        android:id="@+id/edit_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/edit"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/mark_btn"
+        app:layout_constraintEnd_toStartOf="@id/answer_sheet_btn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <Button
+        android:id="@+id/answer_sheet_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/answer_sheets"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/edit_btn"
+        app:layout_constraintEnd_toStartOf="@id/more_btn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+
+    <Button
+        android:id="@+id/more_btn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/more"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toEndOf="@id/answer_sheet_btn"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
