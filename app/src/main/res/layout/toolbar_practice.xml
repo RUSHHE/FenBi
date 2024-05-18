@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/baseline_close_24"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/counter_btn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -23,6 +24,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/baseline_counter_24"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/close_btn"
         app:layout_constraintEnd_toStartOf="@id/counter_tv"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -33,6 +35,7 @@
         android:layout_height="match_parent"
         android:text="00:00"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/counter_btn"
         app:layout_constraintEnd_toStartOf="@id/mark_btn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -43,6 +46,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/mark"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/counter_tv"
         app:layout_constraintEnd_toStartOf="@id/edit_btn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -53,6 +57,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/edit"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/mark_btn"
         app:layout_constraintEnd_toStartOf="@id/answer_sheet_btn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -63,6 +68,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/answer_sheets"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/edit_btn"
         app:layout_constraintEnd_toStartOf="@id/more_btn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"/>
@@ -73,6 +79,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/more"
         android:layout_margin="15dp"
+        android:backgroundTint="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/answer_sheet_btn"
         app:layout_constraintEnd_toEndOf="parent"/>
 
