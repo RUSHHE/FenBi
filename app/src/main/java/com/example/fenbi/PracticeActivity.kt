@@ -3,8 +3,9 @@ package com.example.fenbi
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.core.view.get
 import com.example.fenbi.utils.RequestCallback
-import com.example.fenbi.utils.RequestListenerUser
+import com.example.fenbi.utils.PageRequestListenerUser
 import com.example.fenbi.adapter.PracticeViewPager2Adapter
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.dataClass.QuestionResponseModel
@@ -28,7 +29,7 @@ class PracticeActivity : ComponentActivity() {
 
         val apiService = retrofit.create(QuestionGetService::class.java)
 
-        val requestListenerUser = RequestListenerUser()
+        val pageRequestListenerUser = PageRequestListenerUser()
         val questionDataList: ArrayList<Question> = ArrayList()
 
         val call = apiService.getQuestion(1, 20, 1, 3, 0)
@@ -40,7 +41,7 @@ class PracticeActivity : ComponentActivity() {
                 val questionResponseModel = p1.body()
                 questionDataList.addAll(questionResponseModel!!.data.questions)
                 val userAnswerLists = MutableList(questionDataList.size) { ArrayList<Int>() }
-                binding.practiceVp2.adapter = PracticeViewPager2Adapter(questionDataList, userAnswerLists, requestListenerUser)
+                binding.practiceVp2.adapter = PracticeViewPager2Adapter(questionDataList, userAnswerLists, pageRequestListenerUser)
                 Log.i("获取题库", "onResponse: $questionResponseModel")
             }
 
@@ -51,7 +52,7 @@ class PracticeActivity : ComponentActivity() {
         })
 
         // 接口回调相应答题后翻页
-        requestListenerUser.requestListener = object : RequestCallback {
+        pageRequestListenerUser.requestListener = object : RequestCallback {
             override fun request(position: Int) {
                 binding.practiceVp2.setCurrentItem(position, true)
             }

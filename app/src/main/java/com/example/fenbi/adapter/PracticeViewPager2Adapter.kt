@@ -1,23 +1,27 @@
 package com.example.fenbi.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.OptionAreaBinding
 import com.example.fenbi.databinding.QuestionAreaBinding
-import com.example.fenbi.utils.RequestListenerUser
+import com.example.fenbi.utils.AnswerSheetRequestListenerUser
+import com.example.fenbi.utils.PageRequestListenerUser
 import com.google.android.material.button.MaterialButton
 
 class PracticeViewPager2Adapter(
     private var questionDataList: List<Question>,
     private var userAnswerLists: List<ArrayList<Int>>,
-    private val requestListenerUser: RequestListenerUser
+    private val pageRequestListenerUser: PageRequestListenerUser
 ) :
     RecyclerView.Adapter<PracticeViewPager2Adapter.ViewHolder>() {
+    val answerSheetRequestListenerUser = AnswerSheetRequestListenerUser()
+
     inner class ViewHolder(binding: QuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv
         val contentTextView: TextView = binding.questionContentTv
@@ -63,9 +67,8 @@ class PracticeViewPager2Adapter(
                                 notifyItemChanged(index)
                             }
                             userAnswerList.add(position + 1)
-                            requestListenerUser.goToPage(parentPosition + 1)
+                            pageRequestListenerUser.goToPage(parentPosition + 1)
                         }
-                        Log.i("FenBi", "userAnswerList: $userAnswerList")
                     }
 
                     2 -> {
@@ -75,6 +78,10 @@ class PracticeViewPager2Adapter(
                             userAnswerList.add(position + 1)
                         }
                     }
+                }
+                // 答题卡item被销毁了就不刷新
+                if (answerSheetRequestListenerUser.requestListener != null) {
+                    answerSheetRequestListenerUser.refresh(parentPosition)
                 }
             }
             when (question.showType) {
@@ -108,30 +115,54 @@ class PracticeViewPager2Adapter(
         return viewHolder
     }
 
-    override fun getItemCount(): Int = questionDataList.size
+    override fun getItemCount(): Int = questionDataList.size + 1
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // 根据题目类型设置题目标签
-        when (questionDataList[position].showType) {
-            1 -> {
-                holder.typeTextView.text = "单选题"
-            }
+        if (position == questionDataList.size) {
+            holder.typeTextView.isVisible = false
+            holder.contentTextView.isVisible = false
+            holder.optionRecyclerView.adapter = AnswerSheetAdapter(
+                userAnswerLists,
+                pageRequestListenerUser,
+                answerSheetRequestListenerUser
+            )
 
-            2 -> {
-                holder.typeTextView.text = "多选题"
+            val layoutManager = GridLayoutManager(holder.itemView.context, 5)
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    if (position == layoutManager.itemCount - 1) {
+                        return layoutManager.spanCount
+                    }
+                    return 1
+                }
             }
+            holder.optionRecyclerView.layoutManager = layoutManager
+        } else {
+            // 显示题目类型和题目内容，在复用答题卡的holder中会被隐藏
+            holder.typeTextView.isVisible = true
+            holder.contentTextView.isVisible = true
+            // 根据题目类型设置题目标签
+            when (questionDataList[position].showType) {
+                1 -> {
+                    holder.typeTextView.text = "单选题"
+                }
 
-            3 -> {
-                holder.typeTextView.text = "判断题"
+                2 -> {
+                    holder.typeTextView.text = "多选题"
+                }
+
+                3 -> {
+                    holder.typeTextView.text = "判断题"
+                }
             }
+            // 题目内容
+            holder.contentTextView.text = questionDataList[position].content
+
+            val layoutManager = LinearLayoutManager(holder.itemView.context)
+            holder.optionRecyclerView.layoutManager = layoutManager
+            // 子RecyclerView表示选项布局
+            holder.optionRecyclerView.adapter =
+                OptionAdapter(questionDataList[position], userAnswerLists[position], position)
         }
-        // 题目内容
-        holder.contentTextView.text = questionDataList[position].content
-
-        val layoutManager = LinearLayoutManager(holder.itemView.context)
-        holder.optionRecyclerView.layoutManager = layoutManager
-        // 子RecyclerView表示选项布局
-        holder.optionRecyclerView.adapter =
-            OptionAdapter(questionDataList[position], userAnswerLists[position], position)
     }
 }
