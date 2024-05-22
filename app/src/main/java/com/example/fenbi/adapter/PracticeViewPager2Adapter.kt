@@ -18,14 +18,10 @@ import io.reactivex.rxjava3.core.Observer
 class PracticeViewPager2Adapter(
     private var questionDataList: List<Question>,
     private var userAnswerLists: List<ArrayList<Int>>,
-    practiceObserver: Observer<Int>
+    private val answerSheetAdapter: AnswerSheetAdapter,
+    private val practiceUtils: PracticeUtils
 ) :
     RecyclerView.Adapter<PracticeViewPager2Adapter.ViewHolder>() {
-    val practiceUtils = PracticeUtils(practiceObserver)
-    private val answerSheetAdapter = AnswerSheetAdapter(
-        userAnswerLists,
-        practiceUtils
-    )
 
     inner class ViewHolder(binding: QuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv

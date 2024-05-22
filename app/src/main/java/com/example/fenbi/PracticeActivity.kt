@@ -2,11 +2,17 @@ package com.example.fenbi
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.ComponentActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.fenbi.adapter.AnswerSheetAdapter
 import com.example.fenbi.adapter.PracticeViewPager2Adapter
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
+import com.example.fenbi.utils.PracticeUtils
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
 import retrofit2.Retrofit
@@ -48,6 +54,46 @@ class PracticeActivity : ComponentActivity() {
             }
         }
 
+        val practiceUtils = PracticeUtils(practiceObserver)
+        var answerSheetAdapter: AnswerSheetAdapter
+
+        // 初始化底部的答题卡
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.answerSheetCl).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(p0: View, p1: Int) {
+                   // TODO: 可以设置背景是否可被点击
+                }
+
+                override fun onSlide(p0: View, p1: Float) {
+                    binding.practiceVp2.alpha = 0.5f - p1
+                }
+            })
+        }
+
+        // 设置toolbar区域的观察者
+        val toolbarObserver = object : Observer<Void> {
+            override fun onSubscribe(d: Disposable) {
+                Log.i("ToolbarObserver", "onSubscribe: $d")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e("ToolbarObserver", "onError: $e")
+            }
+
+            override fun onComplete() {
+                bottomSheetBehavior.isHideable = false
+                bottomSheetBehavior.isHideable = true
+                Log.i("ToolbarObserver", "onComplete: ")
+            }
+
+            override fun onNext(t: Void) {
+                Log.i("ToolbarObserver", "onNext: ")
+            }
+        }
+        // 订阅工具栏
+        binding.practiceToolbar.toolbarObserver = toolbarObserver
+
         val call = apiService.getQuestion(1, 5, 1, 1, 0)
         call.enqueue(object : retrofit2.Callback<QuestionResponseModel> {
             override fun onResponse(
@@ -57,8 +103,34 @@ class PracticeActivity : ComponentActivity() {
                 val questionResponseModel = p1.body()
                 questionDataList.addAll(questionResponseModel!!.data.questions)
                 val userAnswerLists = MutableList(questionDataList.size) { ArrayList<Int>() }
+                answerSheetAdapter = AnswerSheetAdapter(
+                    userAnswerLists,
+                    practiceUtils
+                )
                 binding.practiceVp2.adapter =
-                    PracticeViewPager2Adapter(questionDataList, userAnswerLists, practiceObserver)
+                    PracticeViewPager2Adapter(
+                        questionDataList,
+                        userAnswerLists,
+                        answerSheetAdapter,
+                        practiceUtils
+                    )
+
+                // 设置答题卡的布局
+                val layoutManager = GridLayoutManager(baseContext, 5)
+                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        if (position == layoutManager.itemCount - 1) {
+                            return layoutManager.spanCount
+                        }
+                        return 1
+                    }
+                }
+                binding.answerSheetRv.layoutManager = layoutManager
+                binding.answerSheetRv.adapter = answerSheetAdapter
+                binding.answerSheetCloseBtn.setOnClickListener {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+
                 Log.i("获取题库", "onResponse: $questionResponseModel")
             }
 
