@@ -3,13 +3,12 @@ package com.example.fenbi
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.core.view.get
-import com.example.fenbi.utils.RequestCallback
-import com.example.fenbi.utils.PageRequestListenerUser
 import com.example.fenbi.adapter.PracticeViewPager2Adapter
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.Disposable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -29,10 +28,27 @@ class PracticeActivity : ComponentActivity() {
 
         val apiService = retrofit.create(QuestionGetService::class.java)
 
-        val pageRequestListenerUser = PageRequestListenerUser()
         val questionDataList: ArrayList<Question> = ArrayList()
+        val practiceObserver: Observer<Int> = object : Observer<Int> {
+            override fun onNext(position: Int) {
+                binding.practiceVp2.setCurrentItem(position, true)
+                Log.i("PageRequestListenerUser", "onNext: $position")
+            }
 
-        val call = apiService.getQuestion(1, 20, 1, 3, 0)
+            override fun onSubscribe(d: Disposable) {
+                Log.i("PageRequestListenerUser", "onSubscribe: $d")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e("PageRequestListenerUser", "onError: $e")
+            }
+
+            override fun onComplete() {
+                Log.i("PageRequestListenerUser", "onComplete: ")
+            }
+        }
+
+        val call = apiService.getQuestion(1, 5, 1, 1, 0)
         call.enqueue(object : retrofit2.Callback<QuestionResponseModel> {
             override fun onResponse(
                 p0: retrofit2.Call<QuestionResponseModel>,
@@ -41,22 +57,14 @@ class PracticeActivity : ComponentActivity() {
                 val questionResponseModel = p1.body()
                 questionDataList.addAll(questionResponseModel!!.data.questions)
                 val userAnswerLists = MutableList(questionDataList.size) { ArrayList<Int>() }
-                binding.practiceVp2.adapter = PracticeViewPager2Adapter(questionDataList, userAnswerLists, pageRequestListenerUser)
+                binding.practiceVp2.adapter =
+                    PracticeViewPager2Adapter(questionDataList, userAnswerLists, practiceObserver)
                 Log.i("获取题库", "onResponse: $questionResponseModel")
             }
 
             override fun onFailure(p0: retrofit2.Call<QuestionResponseModel>, p1: Throwable) {
                 Log.e("获取题库", "onFailure: " + p1.message)
             }
-
         })
-
-        // 接口回调相应答题后翻页
-        pageRequestListenerUser.requestListener = object : RequestCallback {
-            override fun request(position: Int) {
-                binding.practiceVp2.setCurrentItem(position, true)
-            }
-        }
-
     }
 }

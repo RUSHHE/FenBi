@@ -10,17 +10,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.OptionAreaBinding
 import com.example.fenbi.databinding.QuestionAreaBinding
-import com.example.fenbi.utils.AnswerSheetRequestListenerUser
-import com.example.fenbi.utils.PageRequestListenerUser
+import com.example.fenbi.utils.PracticeUtils
 import com.google.android.material.button.MaterialButton
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observer
 
 class PracticeViewPager2Adapter(
     private var questionDataList: List<Question>,
     private var userAnswerLists: List<ArrayList<Int>>,
-    private val pageRequestListenerUser: PageRequestListenerUser
+    practiceObserver: Observer<Int>
 ) :
     RecyclerView.Adapter<PracticeViewPager2Adapter.ViewHolder>() {
-    val answerSheetRequestListenerUser = AnswerSheetRequestListenerUser()
+    val practiceUtils = PracticeUtils(practiceObserver)
+    private val answerSheetAdapter = AnswerSheetAdapter(
+        userAnswerLists,
+        practiceUtils
+    )
 
     inner class ViewHolder(binding: QuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv
@@ -67,7 +72,7 @@ class PracticeViewPager2Adapter(
                                 notifyItemChanged(index)
                             }
                             userAnswerList.add(position + 1)
-                            pageRequestListenerUser.goToPage(parentPosition + 1)
+                            practiceUtils.goToPage(parentPosition + 1)
                         }
                     }
 
@@ -79,9 +84,12 @@ class PracticeViewPager2Adapter(
                         }
                     }
                 }
-                // 答题卡item被销毁了就不刷新
-                if (answerSheetRequestListenerUser.requestListener != null) {
-                    answerSheetRequestListenerUser.refresh(parentPosition)
+                val answerSheetObservable = Observable.create {
+                    it.onNext(parentPosition)
+                }
+                // 只有答题卡页面未被销毁才订阅
+                if (answerSheetAdapter.answerSheetObserver != null) {
+                    answerSheetObservable.subscribe(answerSheetAdapter.answerSheetObserver!!)
                 }
             }
             when (question.showType) {
@@ -121,11 +129,7 @@ class PracticeViewPager2Adapter(
         if (position == questionDataList.size) {
             holder.typeTextView.isVisible = false
             holder.contentTextView.isVisible = false
-            holder.optionRecyclerView.adapter = AnswerSheetAdapter(
-                userAnswerLists,
-                pageRequestListenerUser,
-                answerSheetRequestListenerUser
-            )
+            holder.optionRecyclerView.adapter = answerSheetAdapter
 
             val layoutManager = GridLayoutManager(holder.itemView.context, 5)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
