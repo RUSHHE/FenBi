@@ -59,24 +59,24 @@ class PracticeViewPager2Adapter(
             holder.optionButton.setOnClickListener {
                 when (question.showType) {
                     1, 3 -> {
-                        if (userAnswerList.contains(position + 1)) {
-                            userAnswerList.remove(position + 1)
+                        if (userAnswerList.contains(position)) {
+                            userAnswerList.remove(position)
                         } else {
                             if (userAnswerList.size >= 1) {
                                 val index = userAnswerList[0] - 1
                                 userAnswerList.removeAt(0)
                                 notifyItemChanged(index)
                             }
-                            userAnswerList.add(position + 1)
+                            userAnswerList.add(position)
                             practiceUtils.goToPage(parentPosition + 1)
                         }
                     }
 
                     2 -> {
-                        if (userAnswerList.contains(position + 1)) {
-                            userAnswerList.remove(position + 1)
+                        if (userAnswerList.contains(position)) {
+                            userAnswerList.remove(position)
                         } else {
-                            userAnswerList.add(position + 1)
+                            userAnswerList.add(position)
                         }
                     }
                 }
