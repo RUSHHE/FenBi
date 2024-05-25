@@ -16,6 +16,9 @@
         android:theme="@style/Theme.FenBi"
         tools:targetApi="31">
         <activity
+            android:name=".ReportActivity"
+            android:exported="false" />
+        <activity
             android:name=".PracticeActivity"
             android:exported="false"
             android:label="@string/title_activity_practice"
