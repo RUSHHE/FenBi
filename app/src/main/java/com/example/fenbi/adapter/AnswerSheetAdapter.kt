@@ -9,15 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fenbi.databinding.ItemAnswerSheetBinding
 import com.example.fenbi.utils.PracticeUtils
 import com.google.android.material.button.MaterialButton
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
 
 
-class AnswerSheetAdapter(
-    private var userAnswerLists: List<ArrayList<Int>>,
-    private val practiceUtils: PracticeUtils
+open class AnswerSheetAdapter(
+    private var userAnswerLists: List<ArrayList<Int>>
 ) : RecyclerView.Adapter<AnswerSheetAdapter.ViewHolder>() {
     var answerSheetObserver: Observer<Int>? = null
+    var answerSheetSubmitObserver: Observer<Void>? = null
+    var practiceUtils: PracticeUtils? = null
 
     inner class ViewHolder(binding: ItemAnswerSheetBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -59,10 +61,15 @@ class AnswerSheetAdapter(
             params.width = LayoutParams.MATCH_PARENT
             holder.button.layoutParams = params
 
-            // 始终为按钮而非checkbox的样式
             holder.button.isChecked = true
             holder.button.setOnClickListener {
+                // 始终为按钮而非checkbox的样式
                 holder.button.isChecked = true
+                val observable: Observable<Void> = Observable.empty()
+                // 如果对象已传入则订阅
+                if (answerSheetSubmitObserver != null) {
+                    observable.subscribe(answerSheetSubmitObserver!!)
+                }
             }
         } else {
             holder.button.text = (position + 1).toString()
@@ -73,7 +80,7 @@ class AnswerSheetAdapter(
             holder.button.layoutParams = params
             holder.button.setOnClickListener {
                 holder.button.isChecked = userAnswerLists[position].isNotEmpty()
-                practiceUtils.goToPage(position)
+                practiceUtils?.goToPage(position)
             }
         }
     }
