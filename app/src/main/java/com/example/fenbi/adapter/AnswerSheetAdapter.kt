@@ -76,7 +76,11 @@ open class AnswerSheetAdapter(
             holder.button.isChecked = userAnswerLists[position].isNotEmpty()
             // 更改提交按钮的宽度为50dp
             val params = holder.button.layoutParams as LayoutParams
-            params.width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50f, holder.button.resources.displayMetrics).toInt()
+            params.width = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                50f,
+                holder.button.resources.displayMetrics
+            ).toInt()
             holder.button.layoutParams = params
             holder.button.setOnClickListener {
                 holder.button.isChecked = userAnswerLists[position].isNotEmpty()

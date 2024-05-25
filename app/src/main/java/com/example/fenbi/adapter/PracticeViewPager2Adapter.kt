@@ -13,7 +13,6 @@ import com.example.fenbi.databinding.QuestionAreaBinding
 import com.example.fenbi.utils.PracticeUtils
 import com.google.android.material.button.MaterialButton
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observer
 
 class PracticeViewPager2Adapter(
     private var questionDataList: List<Question>,

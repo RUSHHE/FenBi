@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.fenbi.adapter.AnswerSheetAdapter
 import com.example.fenbi.adapter.PracticeViewPager2Adapter
-import com.example.fenbi.dataClass.Question
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
 import com.example.fenbi.utils.PracticeUtils
