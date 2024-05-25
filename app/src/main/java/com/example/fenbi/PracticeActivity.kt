@@ -33,7 +33,7 @@ class PracticeActivity : ComponentActivity() {
 
         val apiService = retrofit.create(QuestionGetService::class.java)
 
-        val questionDataList: ArrayList<Question> = ArrayList()
+        PracticeSingleton.questionDataList = ArrayList()
         val practiceObserver: Observer<Int> = object : Observer<Int> {
             override fun onNext(position: Int) {
                 binding.practiceVp2.setCurrentItem(position, true)
@@ -55,6 +55,27 @@ class PracticeActivity : ComponentActivity() {
 
         val practiceUtils = PracticeUtils(practiceObserver)
         var answerSheetAdapter: AnswerSheetAdapter
+        // 答题卡提交事件的观察者
+        val answerSheetSubmitObserver: Observer<Void> = object : Observer<Void> {
+            override fun onSubscribe(d: Disposable) {
+                Log.i("AnswerSheetSubmitObserver", "onSubscribe: $d")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e("AnswerSheetSubmitObserver", "onError: $e")
+            }
+
+            override fun onComplete() {
+                Log.i("AnswerSheetSubmitObserver", PracticeSingleton.userAnswerLists.toString())
+                ReportActivity.actionStart(this@PracticeActivity)
+                Log.i("AnswerSheetSubmitObserver", "onComplete")
+                finish()
+            }
+
+            override fun onNext(t: Void) {
+                Log.i("AnswerSheetSubmitObserver", "onNext")
+            }
+        }
 
         // 初始化底部的答题卡
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.answerSheetCl).apply {
@@ -100,16 +121,19 @@ class PracticeActivity : ComponentActivity() {
                 p1: retrofit2.Response<QuestionResponseModel>
             ) {
                 val questionResponseModel = p1.body()
-                questionDataList.addAll(questionResponseModel!!.data.questions)
-                val userAnswerLists = MutableList(questionDataList.size) { ArrayList<Int>() }
+                PracticeSingleton.questionDataList!!.addAll(questionResponseModel!!.data.questions)
+                PracticeSingleton.userAnswerLists = MutableList(PracticeSingleton.questionDataList!!.size) { ArrayList() }
                 answerSheetAdapter = AnswerSheetAdapter(
-                    userAnswerLists,
-                    practiceUtils
-                )
+                    PracticeSingleton.userAnswerLists!!
+                ).apply {
+                    // 传入观察者
+                    this.answerSheetSubmitObserver = answerSheetSubmitObserver
+                    this.practiceUtils = practiceUtils
+                }
                 binding.practiceVp2.adapter =
                     PracticeViewPager2Adapter(
-                        questionDataList,
-                        userAnswerLists,
+                        PracticeSingleton.questionDataList!!,
+                        PracticeSingleton.userAnswerLists!!,
                         answerSheetAdapter,
                         practiceUtils
                     )
