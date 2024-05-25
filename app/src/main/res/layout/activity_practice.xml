@@ -38,7 +38,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="10dp"
-            android:background="@drawable/baseline_close_24"
+            android:background="@drawable/close"
             android:backgroundTint="?attr/colorOutline"
             app:layout_constraintBottom_toTopOf="@id/answer_sheet_rv"
             app:layout_constraintEnd_toEndOf="parent"
