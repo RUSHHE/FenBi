@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:strokeColor="@color/button_single_selector_stroke"
-        app:strokeWidth="2dp" />
+        app:strokeWidth="1dp" />
 
     <TextView
         android:id="@+id/option_content_tv"
