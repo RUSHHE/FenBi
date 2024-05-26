@@ -8,11 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fenbi.R
 import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.ItemExamStatusBinding
 import com.example.fenbi.databinding.ItemReportBinding
+import com.example.fenbi.databinding.ItemReportOverviewBinding
+import com.example.fenbi.databinding.ItemReportOverviewContentBinding
 import com.google.android.material.card.MaterialCardView
 
 class ReportAdapter(
@@ -40,6 +43,33 @@ class ReportAdapter(
         val reportDescriptionRv: RecyclerView = binding.reportDescriptionRv
         val reportContentCv: MaterialCardView = binding.reportContentCv
         val reportContentRv: RecyclerView = binding.reportContentRv
+    }
+
+    inner class OverviewReportContentAdapter : RecyclerView.Adapter<OverviewReportContentAdapter.ViewHolder>() {
+        inner class ViewHolder(binding: ItemReportOverviewContentBinding) : RecyclerView.ViewHolder(binding.root) {
+            val reportContentTitle: TextView = binding.overviewContentTitle
+            val reportContentValue: TextView = binding.overviewContentValue
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = ItemReportOverviewContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolder(binding)
+        }
+
+        override fun getItemCount(): Int = 2
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            when (position) {
+                0 -> {
+                    holder.reportContentTitle.text = "练习类型："
+                    holder.reportContentValue.text = "类型占位文本"
+                }
+                1 -> {
+                    holder.reportContentTitle.text = "交卷时间："
+                    holder.reportContentValue.text = "2021-01-01 00:00:00"
+                }
+            }
+        }
     }
 
     inner class ExamStatusAdapter(
@@ -89,7 +119,8 @@ class ReportAdapter(
                         holder.statusContentTv.text = "100%"
                     } else {
                         holder.statusDescriptionTv.text = "未答"
-                        holder.statusContentTv.text = (totalAnswer - correctAnswer - wrongAnswer).toString()
+                        holder.statusContentTv.text =
+                            (totalAnswer - correctAnswer - wrongAnswer).toString()
                     }
                 }
 
@@ -99,6 +130,37 @@ class ReportAdapter(
                 }
             }
         }
+    }
+
+    inner class ReportOverviewAdapter : RecyclerView.Adapter<ReportOverviewAdapter.ViewHolder>() {
+        inner class ViewHolder(binding: ItemReportOverviewBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+            val progressBar = binding.overviewProgressBar
+            val correctTextTv = binding.overviewCorrectText
+            val correctNumberTv = binding.overviewCorrectNumber
+            val totalNumberTv = binding.overviewTotalNumber
+        }
+
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): ReportOverviewAdapter.ViewHolder {
+            val binding = ItemReportOverviewBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            return ViewHolder(binding)
+        }
+
+        override fun onBindViewHolder(holder: ReportOverviewAdapter.ViewHolder, position: Int) {
+            holder.progressBar.progress = (correctAnswer.toFloat() / totalAnswer.toFloat()) * 100
+            holder.correctTextTv.text = "答对"
+            holder.correctNumberTv.text = correctAnswer.toString()
+            holder.totalNumberTv.text = "/${totalAnswer}题"
+        }
+
+        override fun getItemCount(): Int = 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -112,9 +174,20 @@ class ReportAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (position) {
-            // 练习报告
+            // 报告总览
             0 -> {
-
+                holder.reportDescriptionRv.layoutManager =
+                    GridLayoutManager(holder.itemView.context, 1)
+                holder.reportDescriptionRv.adapter = ReportOverviewAdapter()
+                val params = holder.reportDescriptionRv.layoutParams as ViewGroup.LayoutParams
+                // 更改用于复用的RecyclerView的宽高
+                params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                holder.reportDescriptionRv.layoutParams = params
+                // 隐藏掉通用的CardView
+                hideContentCardView(holder)
+                holder.reportContentRv.layoutManager = LinearLayoutManager(holder.itemView.context)
+                holder.reportContentRv.adapter = OverviewReportContentAdapter()
             }
 
             // 答题卡
@@ -173,11 +246,13 @@ class ReportAdapter(
                 holder.reportTypeTv.text = "考试情况"
                 holder.reportContentRv.adapter =
                     ExamStatusAdapter(totalAnswer, correctAnswer, wrongAnswer)
-                holder.reportContentRv.layoutManager = GridLayoutManager(holder.itemView.context, if (correctAnswer + wrongAnswer == totalAnswer) {
-                    4
-                } else {
-                    5
-                })
+                holder.reportContentRv.layoutManager = GridLayoutManager(
+                    holder.itemView.context, if (correctAnswer + wrongAnswer == totalAnswer) {
+                        4
+                    } else {
+                        5
+                    }
+                )
                 holder.reportContentRv.addItemDecoration(
                     DividerItemDecoration(
                         holder.itemView.context,
