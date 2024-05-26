@@ -164,13 +164,7 @@ class ReportAdapter(
                     }
                 }
                 // 隐藏掉通用的CardView
-                holder.reportContentCv.strokeWidth = 0
-                holder.reportContentRv.setBackgroundColor(
-                    ContextCompat.getColor(
-                        holder.itemView.context,
-                        R.color.recycler_view_background_report
-                    )
-                )
+                hideContentCardView(holder)
             }
 
             // 考试情况
@@ -192,5 +186,16 @@ class ReportAdapter(
                 )
             }
         }
+    }
+
+    private fun hideContentCardView(holder: ViewHolder) {
+        holder.reportContentCv.strokeWidth = 0
+        holder.reportContentCv.radius = 0f
+        holder.reportContentRv.setBackgroundColor(
+            ContextCompat.getColor(
+                holder.itemView.context,
+                R.color.recycler_view_background_report
+            )
+        )
     }
 }
