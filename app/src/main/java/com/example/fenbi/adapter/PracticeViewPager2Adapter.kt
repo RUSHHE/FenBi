@@ -8,11 +8,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fenbi.dataClass.Question
-import com.example.fenbi.databinding.OptionAreaBinding
-import com.example.fenbi.databinding.QuestionAreaBinding
+import com.example.fenbi.databinding.ItemQuestionAreaBinding
 import com.example.fenbi.utils.PracticeUtils
-import com.google.android.material.button.MaterialButton
-import io.reactivex.rxjava3.core.Observable
 
 class PracticeViewPager2Adapter(
     private var questionDataList: List<Question>,
@@ -22,97 +19,15 @@ class PracticeViewPager2Adapter(
 ) :
     RecyclerView.Adapter<PracticeViewPager2Adapter.ViewHolder>() {
 
-    inner class ViewHolder(binding: QuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(binding: ItemQuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv
         val contentTextView: TextView = binding.questionContentTv
         val optionRecyclerView: RecyclerView = binding.questionOptionRv
     }
 
-    inner class OptionAdapter(
-        private var question: Question,
-        private var userAnswerList: ArrayList<Int>,
-        private val parentPosition: Int
-    ) :
-        RecyclerView.Adapter<OptionAdapter.ViewHolder>() {
-        inner class ViewHolder(binding: OptionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
-            val optionButton: MaterialButton = binding.optionBtn
-            val optionTextView: TextView = binding.optionContentTv
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding: OptionAreaBinding =
-                OptionAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            val viewHolder = ViewHolder(binding)
-
-            return viewHolder
-        }
-
-        override fun getItemCount(): Int = if (question.showType == 3) {
-            2
-        } else {
-            question.chooses.size
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.optionButton.text = ('A' + position).toString()
-            holder.optionButton.setOnClickListener {
-                when (question.showType) {
-                    1, 3 -> {
-                        if (userAnswerList.contains(position)) {
-                            userAnswerList.remove(position)
-                        } else {
-                            if (userAnswerList.size >= 1) {
-                                val index = userAnswerList[0] - 1
-                                userAnswerList.removeAt(0)
-                                notifyItemChanged(index)
-                            }
-                            userAnswerList.add(position)
-                            practiceUtils.goToPage(parentPosition + 1)
-                        }
-                    }
-
-                    2 -> {
-                        if (userAnswerList.contains(position)) {
-                            userAnswerList.remove(position)
-                        } else {
-                            userAnswerList.add(position)
-                        }
-                    }
-                }
-                val answerSheetObservable = Observable.create {
-                    it.onNext(parentPosition)
-                }
-                // 只有答题卡页面未被销毁才订阅
-                if (answerSheetAdapter.answerSheetObserver != null) {
-                    answerSheetObservable.subscribe(answerSheetAdapter.answerSheetObserver!!)
-                }
-            }
-            when (question.showType) {
-                1 -> {
-                    holder.optionTextView.text = question.chooses[position]
-                    // TODO 按钮的样式
-                }
-
-                2 -> {
-                    holder.optionTextView.text = question.chooses[position]
-                    // TODO 按钮的样式
-                }
-
-                3 -> {
-                    holder.optionTextView.text = if (position == 0) {
-                        "正确"
-                    } else {
-                        "错误"
-                    }
-                }
-            }
-            holder.optionButton.isChecked = userAnswerList.contains(position + 1)
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
-            QuestionAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemQuestionAreaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         val viewHolder = ViewHolder(binding)
 
         return viewHolder
@@ -125,8 +40,13 @@ class PracticeViewPager2Adapter(
             holder.typeTextView.isVisible = false
             holder.contentTextView.isVisible = false
             holder.optionRecyclerView.adapter = answerSheetAdapter
-            holder.optionRecyclerView.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
-
+            // 以免复用item时候错误添加itemDecoration
+            if (holder.optionRecyclerView.itemDecorationCount == 0) {
+                holder.optionRecyclerView.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
+            } else if (holder.optionRecyclerView.itemDecorationCount == 1 && holder.optionRecyclerView.getItemDecorationAt(0) !is AnswerSheetAdapter.ItemDecoration) {
+                holder.optionRecyclerView.removeItemDecorationAt(0)
+                holder.optionRecyclerView.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
+            }
             val layoutManager = GridLayoutManager(holder.itemView.context, 5)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
@@ -162,7 +82,17 @@ class PracticeViewPager2Adapter(
             holder.optionRecyclerView.layoutManager = layoutManager
             // 子RecyclerView表示选项布局
             holder.optionRecyclerView.adapter =
-                OptionAdapter(questionDataList[position], userAnswerLists[position], position)
+                OptionAdapter(questionDataList[position], userAnswerLists[position], position).apply {
+                    this@apply.practiceUtils = this@PracticeViewPager2Adapter.practiceUtils
+                    answerSheetObserver = answerSheetAdapter.answerSheetObserver
+                }
+            // 以免复用item时候错误添加itemDecoration
+            if (holder.optionRecyclerView.itemDecorationCount == 0) {
+                holder.optionRecyclerView.addItemDecoration(OptionAdapter.ItemDecoration())
+            } else if (holder.optionRecyclerView.itemDecorationCount == 1 && holder.optionRecyclerView.getItemDecorationAt(0) is AnswerSheetAdapter.ItemDecoration) {
+                holder.optionRecyclerView.removeItemDecorationAt(0)
+                holder.optionRecyclerView.addItemDecoration(OptionAdapter.ItemDecoration())
+            }
         }
     }
 }

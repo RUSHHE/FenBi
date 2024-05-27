@@ -16,9 +16,10 @@
         android:insetBottom="0dp"
         android:padding="0dp"
         android:textColor="@color/button_single_selector_text_color"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:strokeColor="@color/button_single_selector_stroke"
         app:strokeWidth="1dp" />
 
@@ -26,10 +27,11 @@
         android:id="@+id/option_content_tv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@id/option_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toEndOf="@id/option_btn"
         app:layout_constraintTop_toTopOf="@id/option_btn" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

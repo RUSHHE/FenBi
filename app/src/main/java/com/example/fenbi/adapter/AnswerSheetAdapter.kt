@@ -34,13 +34,8 @@ open class AnswerSheetAdapter(
             state: RecyclerView.State
         ) {
             super.getItemOffsets(outRect, view, parent, state)
-            val position = parent.getChildAdapterPosition(view)
-            if (position == parent.adapter!!.itemCount - 1) {
-                outRect.set(50, 100, 50, 100)
-            } else {
-                outRect.top = 100
-                outRect.bottom = 100
-            }
+            outRect.top = 100
+            outRect.bottom = 100
         }
     }
 

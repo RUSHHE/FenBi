@@ -62,6 +62,7 @@
                 android:id="@+id/answer_sheet_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/answer_sheet_close_btn" />
         </androidx.constraintlayout.widget.ConstraintLayout>
