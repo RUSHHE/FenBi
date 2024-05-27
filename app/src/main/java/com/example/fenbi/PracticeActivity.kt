@@ -78,7 +78,7 @@ class PracticeActivity : ComponentActivity() {
         }
 
         // 初始化底部的答题卡
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.answerSheetCl).apply {
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.answerSheetCv).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
             addBottomSheetCallback(object : BottomSheetCallback() {
                 override fun onStateChanged(p0: View, p1: Int) {
@@ -150,6 +150,7 @@ class PracticeActivity : ComponentActivity() {
                 }
                 binding.answerSheetRv.layoutManager = layoutManager
                 binding.answerSheetRv.adapter = answerSheetAdapter
+                binding.answerSheetRv.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
                 binding.answerSheetCloseBtn.setOnClickListener {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }

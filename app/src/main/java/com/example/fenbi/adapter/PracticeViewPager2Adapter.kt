@@ -125,6 +125,7 @@ class PracticeViewPager2Adapter(
             holder.typeTextView.isVisible = false
             holder.contentTextView.isVisible = false
             holder.optionRecyclerView.adapter = answerSheetAdapter
+            holder.optionRecyclerView.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
 
             val layoutManager = GridLayoutManager(holder.itemView.context, 5)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {

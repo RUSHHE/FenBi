@@ -26,6 +26,24 @@ open class AnswerSheetAdapter(
         val button: MaterialButton = binding.answerSheetBtn
     }
 
+    open class ItemDecoration : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: android.graphics.Rect,
+            view: android.view.View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            super.getItemOffsets(outRect, view, parent, state)
+            val position = parent.getChildAdapterPosition(view)
+            if (position == parent.adapter!!.itemCount - 1) {
+                outRect.set(50, 100, 50, 100)
+            } else {
+                outRect.top = 100
+                outRect.bottom = 100
+            }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: ItemAnswerSheetBinding =
             ItemAnswerSheetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -55,7 +73,7 @@ open class AnswerSheetAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position == userAnswerLists.size) {
-            holder.button.text = "提交"
+            holder.button.text = "交卷"
             val params = holder.button.layoutParams as LayoutParams
             // 更改提交按钮的宽度
             params.width = LayoutParams.MATCH_PARENT
