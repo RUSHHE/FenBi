@@ -7,80 +7,111 @@
     android:minHeight="?attr/actionBarSize"
     android:theme="?attr/actionBarTheme">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/close_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/close"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/close"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/counter_btn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/counter_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/timer"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/timer"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/close_btn"
-        app:layout_constraintEnd_toStartOf="@id/counter_tv"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/counter_tv"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="00:00"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/counter_btn"
         app:layout_constraintStart_toEndOf="@id/counter_btn"
-        app:layout_constraintEnd_toStartOf="@id/mark_btn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="@id/counter_btn" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mark_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/pin"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
-        app:layout_constraintStart_toEndOf="@id/counter_tv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/pin"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/edit_btn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/edit_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/mark"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
-        app:layout_constraintStart_toEndOf="@id/mark_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/mark"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/answer_sheet_btn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/answer_sheet_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/answer_sheet"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
-        app:layout_constraintStart_toEndOf="@id/edit_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/answer_sheet"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/more_btn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/more_btn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/more_horiz"
-        android:layout_margin="15dp"
-        android:backgroundTint="?attr/colorOnPrimary"
-        app:layout_constraintStart_toEndOf="@id/answer_sheet_btn"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/more_horiz"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
