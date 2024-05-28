@@ -8,15 +8,13 @@ import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.ItemOptionBinding
 import com.example.fenbi.utils.PracticeUtils
 import com.google.android.material.button.MaterialButton
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
 
-class OptionAdapter(
+open class BaseOptionAdapter(
     private var question: Question,
-    private var userAnswerList: ArrayList<Int>,
-    private val parentPosition: Int
+    private var userAnswerList: ArrayList<Int>
 ) :
-    RecyclerView.Adapter<OptionAdapter.ViewHolder>() {
+    RecyclerView.Adapter<BaseOptionAdapter.ViewHolder>() {
     var practiceUtils: PracticeUtils? = null
     var answerSheetObserver: Observer<Int>? = null
     inner class ViewHolder(binding: ItemOptionBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -65,7 +63,6 @@ class OptionAdapter(
                             notifyItemChanged(index)
                         }
                         userAnswerList.add(position)
-                        practiceUtils?.goToPage(parentPosition + 1)
                     }
                 }
 
@@ -76,13 +73,6 @@ class OptionAdapter(
                         userAnswerList.add(position)
                     }
                 }
-            }
-            val answerSheetObservable = Observable.create {
-                it.onNext(parentPosition)
-            }
-            // 只有答题卡页面未被销毁才订阅
-            if (answerSheetObserver != null) {
-                answerSheetObservable.subscribe(answerSheetObserver!!)
             }
         }
         when (question.showType) {
@@ -104,6 +94,6 @@ class OptionAdapter(
                 }
             }
         }
-        holder.optionButton.isChecked = userAnswerList.contains(position + 1)
+        holder.optionButton.isChecked = userAnswerList.contains(position)
     }
 }

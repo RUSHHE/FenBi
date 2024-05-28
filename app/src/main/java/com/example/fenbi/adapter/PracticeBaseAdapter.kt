@@ -11,13 +11,13 @@ import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.ItemQuestionAreaBinding
 import com.example.fenbi.utils.PracticeUtils
 
-class PracticeBaseAdapter(
+open class PracticeBaseAdapter(
     private var questionDataList: List<Question>,
     private var userAnswerLists: List<ArrayList<Int>>,
-    private val answerSheetAdapter: AnswerSheetAdapter,
-    private val practiceUtils: PracticeUtils
+    private val answerSheetAdapter: AnswerSheetAdapter
 ) :
     RecyclerView.Adapter<PracticeBaseAdapter.ViewHolder>() {
+    var practiceUtils: PracticeUtils? = null
 
     inner class ViewHolder(binding: ItemQuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv
@@ -37,6 +37,7 @@ class PracticeBaseAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position == questionDataList.size) {
+            // 答题卡界面隐藏用不到的组件
             holder.typeTextView.isVisible = false
             holder.contentTextView.isVisible = false
             holder.optionRecyclerView.adapter = answerSheetAdapter
@@ -82,16 +83,16 @@ class PracticeBaseAdapter(
             holder.optionRecyclerView.layoutManager = layoutManager
             // 子RecyclerView表示选项布局
             holder.optionRecyclerView.adapter =
-                OptionAdapter(questionDataList[position], userAnswerLists[position], position).apply {
+                BaseOptionAdapter(questionDataList[position], userAnswerLists[position]).apply {
                     this@apply.practiceUtils = this@PracticeBaseAdapter.practiceUtils
                     answerSheetObserver = answerSheetAdapter.answerSheetObserver
                 }
             // 以免复用item时候错误添加itemDecoration
             if (holder.optionRecyclerView.itemDecorationCount == 0) {
-                holder.optionRecyclerView.addItemDecoration(OptionAdapter.ItemDecoration())
+                holder.optionRecyclerView.addItemDecoration(BaseOptionAdapter.ItemDecoration())
             } else if (holder.optionRecyclerView.itemDecorationCount == 1 && holder.optionRecyclerView.getItemDecorationAt(0) is AnswerSheetAdapter.ItemDecoration) {
                 holder.optionRecyclerView.removeItemDecorationAt(0)
-                holder.optionRecyclerView.addItemDecoration(OptionAdapter.ItemDecoration())
+                holder.optionRecyclerView.addItemDecoration(BaseOptionAdapter.ItemDecoration())
             }
         }
     }

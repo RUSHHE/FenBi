@@ -6,7 +6,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.fenbi.adapter.AnswerSheetAdapter
-import com.example.fenbi.adapter.PracticeBaseAdapter
+import com.example.fenbi.adapter.ExamAdapter
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
 import com.example.fenbi.utils.PracticeUtils
@@ -131,12 +131,13 @@ class PracticeActivity : ComponentActivity() {
                     this.practiceUtils = practiceUtils
                 }
                 binding.practiceVp2.adapter =
-                    PracticeBaseAdapter(
+                    ExamAdapter(
                         PracticeSingleton.questionDataList!!,
                         PracticeSingleton.userAnswerLists!!,
                         answerSheetAdapter,
-                        practiceUtils
-                    )
+                    ).apply {
+                        this.practiceUtils = practiceUtils
+                    }
 
                 // 设置答题卡的布局
                 val layoutManager = GridLayoutManager(baseContext, 5)
