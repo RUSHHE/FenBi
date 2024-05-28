@@ -17,12 +17,14 @@ class SemiCircleProgressBar @JvmOverloads constructor(
         color = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimaryContainer, Color.GRAY)
         style = Paint.Style.STROKE
         strokeWidth = 20f
+        strokeCap = Paint.Cap.ROUND
     }
 
     private val progressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, Color.BLUE)
         style = Paint.Style.STROKE
         strokeWidth = 20f
+        strokeCap = Paint.Cap.ROUND
     }
 
     private val rectF = RectF()
