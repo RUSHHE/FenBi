@@ -11,13 +11,13 @@ import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.ItemQuestionAreaBinding
 import com.example.fenbi.utils.PracticeUtils
 
-class PracticeViewPager2Adapter(
+class PracticeBaseAdapter(
     private var questionDataList: List<Question>,
     private var userAnswerLists: List<ArrayList<Int>>,
     private val answerSheetAdapter: AnswerSheetAdapter,
     private val practiceUtils: PracticeUtils
 ) :
-    RecyclerView.Adapter<PracticeViewPager2Adapter.ViewHolder>() {
+    RecyclerView.Adapter<PracticeBaseAdapter.ViewHolder>() {
 
     inner class ViewHolder(binding: ItemQuestionAreaBinding) : RecyclerView.ViewHolder(binding.root) {
         val typeTextView: TextView = binding.questionTypeTv
@@ -83,7 +83,7 @@ class PracticeViewPager2Adapter(
             // 子RecyclerView表示选项布局
             holder.optionRecyclerView.adapter =
                 OptionAdapter(questionDataList[position], userAnswerLists[position], position).apply {
-                    this@apply.practiceUtils = this@PracticeViewPager2Adapter.practiceUtils
+                    this@apply.practiceUtils = this@PracticeBaseAdapter.practiceUtils
                     answerSheetObserver = answerSheetAdapter.answerSheetObserver
                 }
             // 以免复用item时候错误添加itemDecoration
