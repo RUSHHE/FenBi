@@ -1,21 +1,52 @@
 package com.example.fenbi
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.fenbi.adapter.ChooseBankAdapter
 import com.example.fenbi.databinding.ActivityMainBinding
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.Disposable
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var questionMode: MutableList<Int> = listOf(0, 0, 5).toMutableList()
+    private var questionMode = ArrayList<Int>().apply {
+        addAll(listOf(0, 0, 20, 1)) // 做题年份, 出题年份（无用）, 题目数量, 题目类型
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initQuestionMode()
-        startActivity(Intent(this, PracticeActivity::class.java))
+        val chooseBankObserver = object : Observer<Int> {
+            override fun onSubscribe(d: Disposable) {
+                Log.i("chooseBankObserver", "onSubscribe:$d")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e("chooseBankObserver", "onError: ${e.message}")
+            }
+
+            override fun onComplete() {
+                PracticeActivity.actionStart(this@MainActivity, questionMode)
+                Log.i("chooseBankObserver", "onComplete")
+            }
+
+            override fun onNext(t: Int) {
+                questionMode[3] = t // 题目类型
+                Log.i("chooseBankObserver", "onNext: $t")
+            }
+        }
+        binding.questionBankListRv.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = ChooseBankAdapter().apply {
+                this.chooseBankObserver = chooseBankObserver
+            }
+        }
     }
 
     private fun initQuestionMode() {
@@ -66,6 +97,10 @@ class MainActivity : ComponentActivity() {
             minValue = 0
             maxValue = displayedValues.size - 1
             value = (displayedValues.size - 1) / 2
+            setOnValueChangedListener { picker, oldVal, newVal ->
+                questionMode[2] = Integer.parseInt(displayedValues[newVal])
+
+            }
         }
     }
 }

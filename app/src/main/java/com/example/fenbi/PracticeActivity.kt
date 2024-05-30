@@ -1,5 +1,7 @@
 package com.example.fenbi
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -19,9 +21,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class PracticeActivity : ComponentActivity() {
     private lateinit var binding: ActivityPracticeBinding
+    private lateinit var questionMode: ArrayList<Int>
+
+    companion object {
+        fun actionStart(context: Context, questionMode: ArrayList<Int>) {
+            val intent = Intent(context, PracticeActivity::class.java)
+            intent.putIntegerArrayListExtra("questionMode", questionMode)
+            context.startActivity(intent)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPracticeBinding.inflate(layoutInflater)
+        questionMode = intent.getIntegerArrayListExtra("questionMode") as ArrayList<Int>
         val view = binding.root
 
         setContentView(view)
@@ -82,7 +95,7 @@ class PracticeActivity : ComponentActivity() {
             state = BottomSheetBehavior.STATE_HIDDEN
             addBottomSheetCallback(object : BottomSheetCallback() {
                 override fun onStateChanged(p0: View, p1: Int) {
-                   // TODO: 可以设置背景是否可被点击
+                    // TODO: 可以设置背景是否可被点击
                 }
 
                 override fun onSlide(p0: View, p1: Float) {
@@ -114,7 +127,30 @@ class PracticeActivity : ComponentActivity() {
         // 订阅工具栏
         binding.practiceToolbar.toolbarObserver = toolbarObserver
 
-        val call = apiService.getQuestion(1, 5, 1, 1, 0)
+        // 获取题库
+        val call = apiService.getQuestion(
+            start = 1,
+            size = questionMode[2],
+            courseType =
+            when (questionMode[3]) {
+                // 马原
+                1 -> {
+                    1
+                }
+
+                // 思想道德与法治
+                4 -> {
+                    2
+                }
+
+                // API没有的统一马原
+                else -> {
+                    1
+                }
+            },
+            showType = 1,
+            isRand = 0
+        )
         call.enqueue(object : retrofit2.Callback<QuestionResponseModel> {
             override fun onResponse(
                 p0: retrofit2.Call<QuestionResponseModel>,
@@ -122,7 +158,8 @@ class PracticeActivity : ComponentActivity() {
             ) {
                 val questionResponseModel = p1.body()
                 PracticeSingleton.questionDataList!!.addAll(questionResponseModel!!.data.questions)
-                PracticeSingleton.userAnswerLists = MutableList(PracticeSingleton.questionDataList!!.size) { ArrayList() }
+                PracticeSingleton.userAnswerLists =
+                    MutableList(PracticeSingleton.questionDataList!!.size) { ArrayList() }
                 answerSheetAdapter = AnswerSheetAdapter(
                     PracticeSingleton.userAnswerLists!!
                 ).apply {
