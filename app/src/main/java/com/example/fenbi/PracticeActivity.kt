@@ -104,8 +104,8 @@ class PracticeActivity : ComponentActivity() {
             })
         }
 
-        // 设置toolbar区域的观察者
-        val toolbarObserver = object : Observer<Void> {
+        // 订阅工具栏，设置toolbar区域的观察者
+        binding.practiceToolbar.toolbarObserver = object : Observer<Void> {
             override fun onSubscribe(d: Disposable) {
                 Log.i("ToolbarObserver", "onSubscribe: $d")
             }
@@ -123,9 +123,7 @@ class PracticeActivity : ComponentActivity() {
             override fun onNext(t: Void) {
                 Log.i("ToolbarObserver", "onNext: ")
             }
-        }
-        // 订阅工具栏
-        binding.practiceToolbar.toolbarObserver = toolbarObserver
+       }
 
         // 获取题库
         val call = apiService.getQuestion(
@@ -177,18 +175,23 @@ class PracticeActivity : ComponentActivity() {
                     }
 
                 // 设置答题卡的布局
-                val layoutManager = GridLayoutManager(baseContext, 5)
-                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        if (position == layoutManager.itemCount - 1) {
-                            return layoutManager.spanCount
+                val layoutManager = GridLayoutManager(baseContext, 5).apply {
+                    spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int {
+                            if (position == this@apply.itemCount - 1) {
+                                return spanCount
+                            }
+                            return 1
                         }
-                        return 1
                     }
                 }
-                binding.answerSheetRv.layoutManager = layoutManager
-                binding.answerSheetRv.adapter = answerSheetAdapter
-                binding.answerSheetRv.addItemDecoration(AnswerSheetAdapter.ItemDecoration())
+
+                binding.answerSheetRv.apply {
+                    this@apply.layoutManager = layoutManager
+                    adapter = answerSheetAdapter
+                    addItemDecoration(AnswerSheetAdapter.ItemDecoration())
+                }
+
                 binding.answerSheetCloseBtn.setOnClickListener {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
