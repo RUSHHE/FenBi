@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.com.squareup.okhttp3)
     implementation(libs.com.squareup.retrofit2)
     implementation(libs.com.squareup.retrofit2.converter.gson)
+    implementation(libs.com.squareup.retrofit2.adapter.rxjava3)
     implementation(libs.io.reactivex.rxjava3)
     implementation(libs.io.reactivex.rxjava3.rxandroid)
     implementation(libs.androidx.appcompat)

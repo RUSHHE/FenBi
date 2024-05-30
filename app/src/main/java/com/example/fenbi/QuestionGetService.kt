@@ -1,7 +1,7 @@
 package com.example.fenbi
 
 import com.example.fenbi.dataClass.QuestionResponseModel
-import retrofit2.Call
+import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,5 +13,5 @@ interface QuestionGetService {
         @Query("courseType") courseType: Int,
         @Query("showType") showType: Int,
         @Query("isRand") isRand: Int
-    ): Call<QuestionResponseModel>
+    ): Observable<QuestionResponseModel>
 }

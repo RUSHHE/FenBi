@@ -12,12 +12,11 @@ import com.example.fenbi.adapter.ExamAdapter
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
 import com.example.fenbi.utils.PracticeUtils
+import com.example.fenbi.utils.QuestionBankUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PracticeActivity : ComponentActivity() {
     private lateinit var binding: ActivityPracticeBinding
@@ -38,13 +37,6 @@ class PracticeActivity : ComponentActivity() {
         val view = binding.root
 
         setContentView(view)
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://120.55.64.65:8056")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(QuestionGetService::class.java)
 
         PracticeSingleton.questionDataList = ArrayList()
         val practiceObserver: Observer<Int> = object : Observer<Int> {
@@ -104,6 +96,70 @@ class PracticeActivity : ComponentActivity() {
             })
         }
 
+        val observer = object : Observer<QuestionResponseModel> {
+            override fun onSubscribe(d: Disposable) {
+                Log.i("QuestionGetService", "onSubscribe: $d")
+            }
+
+            override fun onError(e: Throwable) {
+                Log.e("QuestionGetService", "onError: ${e.message}")
+            }
+
+            override fun onComplete() {
+                Log.i("QuestionGetService", "onComplete")
+            }
+
+            override fun onNext(t: QuestionResponseModel) {
+                // 存储问题和用户回答的单例
+                PracticeSingleton.questionDataList!!.addAll(t.data.questions)
+                PracticeSingleton.userAnswerLists =
+                    MutableList(PracticeSingleton.questionDataList!!.size) { ArrayList() }
+
+                // 初始化答题卡适配器
+                answerSheetAdapter = AnswerSheetAdapter(
+                    PracticeSingleton.userAnswerLists!!
+                ).apply {
+                    // 传入观察者
+                    this.answerSheetSubmitObserver = answerSheetSubmitObserver
+                    this.practiceUtils = practiceUtils
+                }
+
+                // 设置考试页面的适配器
+                binding.practiceVp2.adapter =
+                    ExamAdapter(
+                        PracticeSingleton.questionDataList!!,
+                        PracticeSingleton.userAnswerLists!!,
+                        answerSheetAdapter,
+                    ).apply {
+                        this@apply.practiceUtils = practiceUtils
+                    }
+
+                binding.answerSheetRv.apply {
+                    // 设置答题卡的布局
+                    this@apply.layoutManager = GridLayoutManager(baseContext, 5).apply {
+                        spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                            override fun getSpanSize(position: Int): Int {
+                                if (position == itemCount - 1) {
+                                    return spanCount
+                                }
+                                return 1
+                            }
+                        }
+                    }
+                    adapter = answerSheetAdapter
+                    addItemDecoration(AnswerSheetAdapter.ItemDecoration())
+                }
+
+                binding.answerSheetCloseBtn.setOnClickListener {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+
+                Log.i("QuestionGetService", "onNext: $t")
+            }
+        }
+
+        QuestionBankUtils(questionMode).subscribe(observer) // 订阅题库工具类获取的题库
+
         // 订阅工具栏，设置toolbar区域的观察者
         binding.practiceToolbar.toolbarObserver = object : Observer<Void> {
             override fun onSubscribe(d: Disposable) {
@@ -123,85 +179,6 @@ class PracticeActivity : ComponentActivity() {
             override fun onNext(t: Void) {
                 Log.i("ToolbarObserver", "onNext: ")
             }
-       }
-
-        // 获取题库
-        val call = apiService.getQuestion(
-            start = 1,
-            size = questionMode[2],
-            courseType =
-            when (questionMode[3]) {
-                // 马原
-                1 -> {
-                    1
-                }
-
-                // 思想道德与法治
-                4 -> {
-                    2
-                }
-
-                // API没有的统一马原
-                else -> {
-                    1
-                }
-            },
-            showType = 1,
-            isRand = 0
-        )
-        call.enqueue(object : retrofit2.Callback<QuestionResponseModel> {
-            override fun onResponse(
-                p0: retrofit2.Call<QuestionResponseModel>,
-                p1: retrofit2.Response<QuestionResponseModel>
-            ) {
-                val questionResponseModel = p1.body()
-                PracticeSingleton.questionDataList!!.addAll(questionResponseModel!!.data.questions)
-                PracticeSingleton.userAnswerLists =
-                    MutableList(PracticeSingleton.questionDataList!!.size) { ArrayList() }
-                answerSheetAdapter = AnswerSheetAdapter(
-                    PracticeSingleton.userAnswerLists!!
-                ).apply {
-                    // 传入观察者
-                    this.answerSheetSubmitObserver = answerSheetSubmitObserver
-                    this.practiceUtils = practiceUtils
-                }
-                binding.practiceVp2.adapter =
-                    ExamAdapter(
-                        PracticeSingleton.questionDataList!!,
-                        PracticeSingleton.userAnswerLists!!,
-                        answerSheetAdapter,
-                    ).apply {
-                        this.practiceUtils = practiceUtils
-                    }
-
-                // 设置答题卡的布局
-                val layoutManager = GridLayoutManager(baseContext, 5).apply {
-                    spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int {
-                            if (position == this@apply.itemCount - 1) {
-                                return spanCount
-                            }
-                            return 1
-                        }
-                    }
-                }
-
-                binding.answerSheetRv.apply {
-                    this@apply.layoutManager = layoutManager
-                    adapter = answerSheetAdapter
-                    addItemDecoration(AnswerSheetAdapter.ItemDecoration())
-                }
-
-                binding.answerSheetCloseBtn.setOnClickListener {
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                }
-
-                Log.i("获取题库", "onResponse: $questionResponseModel")
-            }
-
-            override fun onFailure(p0: retrofit2.Call<QuestionResponseModel>, p1: Throwable) {
-                Log.e("获取题库", "onFailure: " + p1.message)
-            }
-        })
+        }
     }
 }
