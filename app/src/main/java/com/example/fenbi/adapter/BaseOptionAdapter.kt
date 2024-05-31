@@ -17,6 +17,7 @@ open class BaseOptionAdapter(
     RecyclerView.Adapter<BaseOptionAdapter.ViewHolder>() {
     var practiceUtils: PracticeUtils? = null
     var answerSheetObserver: Observer<Int>? = null
+
     inner class ViewHolder(binding: ItemOptionBinding) : RecyclerView.ViewHolder(binding.root) {
         val optionButton: MaterialButton = binding.optionBtn
         val optionTextView: TextView = binding.optionContentTv
@@ -43,57 +44,45 @@ open class BaseOptionAdapter(
         return viewHolder
     }
 
-    override fun getItemCount(): Int = if (question.showType == 3) {
-        2
-    } else {
-        question.chooses.size
-    }
+    override fun getItemCount(): Int =
+        if (question.showType == 3) {
+            2
+        } else {
+            question.chooses.size
+        }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.optionButton.text = ('A' + position).toString()
-        holder.optionButton.setOnClickListener {
-            when (question.showType) {
-                1, 3 -> {
-                    if (userAnswerList.contains(position)) {
-                        userAnswerList.remove(position)
+        holder.optionButton.apply {
+            text = ('A' + position).toString()
+            isChecked = userAnswerList.contains(position)
+            setOnClickListener {
+                userAnswerList.apply {
+                    if (contains(position)) {
+                        remove(position)
                     } else {
-                        if (userAnswerList.size >= 1) {
-                            val index = userAnswerList[0] - 1
-                            userAnswerList.removeAt(0)
+                        // 单选和多选的情况
+                        if ((question.showType == 1 || question.showType == 3) && size >= 1) {
+                            val index = get(0) - 1
+                            removeAt(0)
                             notifyItemChanged(index)
                         }
-                        userAnswerList.add(position)
-                    }
-                }
-
-                2 -> {
-                    if (userAnswerList.contains(position)) {
-                        userAnswerList.remove(position)
-                    } else {
-                        userAnswerList.add(position)
+                        add(position)
                     }
                 }
             }
         }
-        when (question.showType) {
-            1 -> {
-                holder.optionTextView.text = question.chooses[position]
-                // TODO 按钮的样式
-            }
-
-            2 -> {
-                holder.optionTextView.text = question.chooses[position]
-                // TODO 按钮的样式
-            }
+        holder.optionTextView.text = when (question.showType) {
+            1, 2 -> question.chooses[position]
 
             3 -> {
-                holder.optionTextView.text = if (position == 0) {
+                if (position == 0) {
                     "正确"
                 } else {
                     "错误"
                 }
             }
+
+            else -> ""
         }
-        holder.optionButton.isChecked = userAnswerList.contains(position)
     }
 }
