@@ -8,11 +8,13 @@ import com.example.fenbi.dataClass.Question
 import com.example.fenbi.databinding.ItemOptionBinding
 import com.example.fenbi.utils.PracticeUtils
 import com.google.android.material.button.MaterialButton
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
 
 open class BaseOptionAdapter(
     private var question: Question,
-    private var userAnswerList: ArrayList<Int>
+    private var userAnswerList: ArrayList<Int>,
+    private val parentPosition: Int
 ) :
     RecyclerView.Adapter<BaseOptionAdapter.ViewHolder>() {
     var practiceUtils: PracticeUtils? = null
@@ -68,6 +70,11 @@ open class BaseOptionAdapter(
                         }
                         add(position)
                     }
+                }
+                val answerSheetObservable = Observable.just(parentPosition)
+                // 只有答题卡页面未被销毁才订阅
+                if (answerSheetObserver != null) {
+                    answerSheetObservable.subscribe(answerSheetObserver!!)
                 }
             }
         }
