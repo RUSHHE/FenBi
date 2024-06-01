@@ -18,7 +18,7 @@ class PracticeFragment : Fragment() {
     // 只能在onCreateView与onDestroyView之间的生命周期里使用
     private val binding: FragmentPracticeBinding get() = _binding!!
     private var questionMode = ArrayList<Int>().apply {
-        addAll(listOf(0, 0, 20, 1)) // 做题年份, 出题年份（无用）, 题目数量, 题目类型
+        addAll(listOf(0, 0, 20, 1)) // 做题模式, 出题年份（无用）, 题目数量, 题目类型
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

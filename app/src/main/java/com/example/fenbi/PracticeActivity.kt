@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.fenbi.adapter.AnswerSheetAdapter
 import com.example.fenbi.adapter.ExamAdapter
+import com.example.fenbi.adapter.PracticeAdapter
 import com.example.fenbi.dataClass.QuestionResponseModel
 import com.example.fenbi.databinding.ActivityPracticeBinding
 import com.example.fenbi.utils.PracticeUtils
@@ -126,12 +127,20 @@ class PracticeActivity : ComponentActivity() {
 
                 // 设置考试页面的适配器
                 binding.practiceVp2.adapter =
-                    ExamAdapter(
-                        PracticeSingleton.questionDataList!!,
-                        PracticeSingleton.userAnswerLists!!,
-                        answerSheetAdapter,
-                    ).apply {
-                        this@apply.practiceUtils = practiceUtils
+                    if (questionMode[0] == 0) {
+                        ExamAdapter(
+                            PracticeSingleton.questionDataList!!,
+                            PracticeSingleton.userAnswerLists!!,
+                            answerSheetAdapter,
+                        ).apply {
+                            this@apply.practiceUtils = practiceUtils
+                        }
+                    } else {
+                        PracticeAdapter(
+                            PracticeSingleton.questionDataList!!,
+                            PracticeSingleton.userAnswerLists!!,
+                            answerSheetAdapter,
+                        )
                     }
 
                 binding.answerSheetRv.apply {

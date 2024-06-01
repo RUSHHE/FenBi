@@ -62,7 +62,7 @@ open class BaseOptionAdapter(
                     if (contains(position)) {
                         remove(position)
                     } else {
-                        // 单选和多选的情况
+                        // 单选和判断的情况
                         if ((question.showType == 1 || question.showType == 3) && size >= 1) {
                             val index = get(0)
                             removeAt(0)

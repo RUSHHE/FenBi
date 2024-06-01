@@ -36,6 +36,7 @@ open class PracticeBaseAdapter(
     override fun getItemCount(): Int = questionDataList.size + 1
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         if (position == questionDataList.size) {
             // 答题卡界面隐藏用不到的组件
             holder.typeTextView.isVisible = false
@@ -83,7 +84,7 @@ open class PracticeBaseAdapter(
             holder.optionRecyclerView.apply {
                 layoutManager = LinearLayoutManager(holder.itemView.context)
                 adapter =
-                    BaseOptionAdapter(questionDataList[position], userAnswerLists[position]).apply {
+                    BaseOptionAdapter(questionDataList[position], userAnswerLists[position], position).apply {
                         this.practiceUtils = this@PracticeBaseAdapter.practiceUtils
                         // 子RecyclerView表示选项布局
                         answerSheetObserver = answerSheetAdapter.answerSheetObserver
