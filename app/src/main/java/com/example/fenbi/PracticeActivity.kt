@@ -75,8 +75,8 @@ class PracticeActivity : ComponentActivity() {
 
             override fun onComplete() {
                 var totalTime: Long
-                binding.practiceToolbar.timerUtils.apply {
-                    totalTime = count
+                binding.practiceToolbar.apply {
+                    totalTime = timerUtils.count + millisUntilFinished
                 }
                 ReportActivity.actionStart(
                     context = this@PracticeActivity,
