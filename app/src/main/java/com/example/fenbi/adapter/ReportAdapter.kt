@@ -20,7 +20,10 @@ import com.google.android.material.card.MaterialCardView
 
 class ReportAdapter(
     var questionDataList: ArrayList<Question>,
-    private var userAnswerLists: List<ArrayList<Int>>
+    private var userAnswerLists: List<ArrayList<Int>>,
+    private val practiceType: String,
+    private var totalTime: String,
+    private var submitTime: String
 ) : RecyclerView.Adapter<ReportAdapter.ViewHolder>() {
     private var totalAnswer: Int = 0
     private var correctAnswer: Int = 0
@@ -45,14 +48,20 @@ class ReportAdapter(
         val reportContentRv: RecyclerView = binding.reportContentRv
     }
 
-    inner class OverviewReportContentAdapter : RecyclerView.Adapter<OverviewReportContentAdapter.ViewHolder>() {
-        inner class ViewHolder(binding: ItemReportOverviewContentBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class OverviewReportContentAdapter :
+        RecyclerView.Adapter<OverviewReportContentAdapter.ViewHolder>() {
+        inner class ViewHolder(binding: ItemReportOverviewContentBinding) :
+            RecyclerView.ViewHolder(binding.root) {
             val reportContentTitle: TextView = binding.overviewContentTitle
             val reportContentValue: TextView = binding.overviewContentValue
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemReportOverviewContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding = ItemReportOverviewContentBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
             return ViewHolder(binding)
         }
 
@@ -62,11 +71,12 @@ class ReportAdapter(
             when (position) {
                 0 -> {
                     holder.reportContentTitle.text = "练习类型："
-                    holder.reportContentValue.text = "类型占位文本"
+                    holder.reportContentValue.text = practiceType
                 }
+
                 1 -> {
                     holder.reportContentTitle.text = "交卷时间："
-                    holder.reportContentValue.text = "2021-01-01 00:00:00"
+                    holder.reportContentValue.text = submitTime
                 }
             }
         }
@@ -116,7 +126,7 @@ class ReportAdapter(
                 3 -> {
                     if (itemCount == 4) {
                         holder.statusDescriptionTv.text = "总用时"
-                        holder.statusContentTv.text = "100%"
+                        holder.statusContentTv.text = "${totalTime}秒"
                     } else {
                         holder.statusDescriptionTv.text = "未答"
                         holder.statusContentTv.text =
@@ -126,7 +136,7 @@ class ReportAdapter(
 
                 4 -> {
                     holder.statusDescriptionTv.text = "总用时"
-                    holder.statusContentTv.text = "100%"
+                    holder.statusContentTv.text = "${totalTime}秒"
                 }
             }
         }

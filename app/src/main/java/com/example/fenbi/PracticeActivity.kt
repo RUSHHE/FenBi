@@ -18,6 +18,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class PracticeActivity : ComponentActivity() {
     private lateinit var binding: ActivityPracticeBinding
@@ -72,8 +74,42 @@ class PracticeActivity : ComponentActivity() {
             }
 
             override fun onComplete() {
-                Log.i("AnswerSheetSubmitObserver", PracticeSingleton.userAnswerLists.toString())
-                ReportActivity.actionStart(this@PracticeActivity)
+                var totalTime: Long
+                binding.practiceToolbar.timerUtils.apply {
+                    totalTime = count
+                }
+                ReportActivity.actionStart(
+                    context = this@PracticeActivity,
+                    practiceType =
+                    when (questionMode[3]) {
+                        0 -> {
+                            "习近平新时代中国特色社会主义思想概论"
+                        }
+
+                        1 -> {
+                            "马原"
+                        }
+
+                        2 -> {
+                            "毛泽东思想和中国特色社会主义理论体系概论"
+                        }
+
+                        3 -> {
+                            "中国近代史纲要"
+                        }
+
+                        4 -> {
+                            "思想道德与法治"
+                        }
+
+                        else -> {
+                            ""
+                        }
+                    },
+                    totalTime = totalTime,
+                    submitTime = SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(Date(System.currentTimeMillis()))
+                        .toString()
+                )
                 Log.i("AnswerSheetSubmitObserver", "onComplete")
                 finish()
             }
